@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CucaLanches.Api.Controllers;
 
 [ApiController]
-[Route("/health")]
+[Route("health")]
 public class HealthController:ControllerBase
 {
     [HttpGet]
