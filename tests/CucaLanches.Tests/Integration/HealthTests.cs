@@ -1,12 +1,12 @@
 using System.Net;
+using CucaLanches.Tests;
 
-namespace CucaLanches.Tests.Integration;
 
-public class HealthTests:IClassFixture<IntegrationFactory>
+public class HealthTests:IClassFixture<DatabaseTestFactory>
 {
     private readonly HttpClient _client;
 
-    public HealthTests(IntegrationFactory factory)
+    public HealthTests(DatabaseTestFactory factory)
     {
         _client = factory.CreateClient();
     }
