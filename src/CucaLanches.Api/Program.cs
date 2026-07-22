@@ -1,4 +1,10 @@
+using CucaLanches.Application.Products.Interfaces;
+using CucaLanches.Application.Products.Services;
+using CucaLanches.Application.PublicMenu.Interfaces;
+using CucaLanches.Application.PublicMenu.Services;
 using CucaLanches.Infrastructure.DependencyInjection;
+using CucaLanches.Infrastructure.Products;
+using CucaLanches.Infrastructure.PublicMenu;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +17,12 @@ builder.Services.AddSwaggerGen();
 
 //DB Connection
 builder.Services.AddInfrastructure(builder.Configuration);
+
+//Controllers Services
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IPublicMenuService, PublicMenuService>();
+builder.Services.AddScoped<IPublicMenuRepository, PublicMenuRepository>();
 
 var app = builder.Build();
 

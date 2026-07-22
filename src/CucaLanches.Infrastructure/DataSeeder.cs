@@ -1,3 +1,4 @@
+
 using CucaLanches.Domain.Entities;
 using CucaLanches.Domain.Enums;
 
@@ -11,7 +12,7 @@ public static class DataSeeder
 
         if (!db.Users.Any())
         {
-            db.Users.Add(new User
+            db.Users.Add(new User()
             {
                 Name =  "Admin",
                 Email = "Admin@gmail.com",
@@ -37,9 +38,9 @@ public static class DataSeeder
             if (!db.Products.Any())
             {
                 db.Products.AddRange(
-                    new Product { Name = "X-Burguer", Type = ProductType.Lunch, Price = 18.00m },
-                    new Product { Name = "Coca-Cola Lata", Type = ProductType.Drink, Price = 6.00m },
-                    new Product { Name = "Batata Frita", Type = ProductType.Portion, Price = 12.00m });
+                    new Product { Name = "X-Burguer", Type = ProductType.Lunch, Price = 18.00m, Active = true},
+                    new Product { Name = "Coca-Cola Lata", Type = ProductType.Drink, Price = 6.00m, Active = true },
+                    new Product { Name = "Batata Frita", Type = ProductType.Portion, Price = 12.00m, Active = true });
             }
 
             
