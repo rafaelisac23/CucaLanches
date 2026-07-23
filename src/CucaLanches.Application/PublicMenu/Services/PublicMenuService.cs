@@ -1,3 +1,4 @@
+using CucaLanches.Application.Exceptions;
 using CucaLanches.Application.PublicMenu.DTOs;
 using CucaLanches.Application.PublicMenu.Interfaces;
 
@@ -19,7 +20,7 @@ public class PublicMenuService:IPublicMenuService
 
         if (!products.Any())
         {
-            throw new Exception("Dont have any products");
+            throw new NotFoundException("Dont have any product");
         }
 
         var productsResponse = products.Select(p => new PublicMenuResponseDTO

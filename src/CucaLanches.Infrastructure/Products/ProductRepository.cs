@@ -33,12 +33,12 @@ public class ProductRepository:IProductRepository
 
     public async Task UpdateAsync(Product product)
     {
-        UpdateOrDisactive(product);
+       await UpdateOrDisactive(product);
     }
 
     public async Task DeleteAsync(Product product)
     {
-        UpdateOrDisactive(product);
+       await UpdateOrDisactive(product);
     }
     
     public async Task UpdateOrDisactive(Product product)

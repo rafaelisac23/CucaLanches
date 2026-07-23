@@ -10,60 +10,66 @@ public static class ProductValidator
 
     public static List<ValidationError> IsValid(ProductRequestDTO product)
     {
-
         var errors = new List<ValidationError>();
-        
-        
-        if (product == null)
+
+        if(product == null)
         {
             errors.Add(new ValidationError
             {
-                Name = nameof(product),
+                Field = nameof(product),
                 Message = "Product is null"
             });
+
+            return errors;
         }
 
-        if (string.IsNullOrWhiteSpace(product.Name))
+
+        if(string.IsNullOrWhiteSpace(product.Name))
         {
             errors.Add(new ValidationError
             {
-                 Name = nameof(product.Name),
-                 Message = "Product name is required"
+                Field = nameof(product.Name),
+                Message = "Product name is required"
+            });
+        }
+        else if(product.Name.Length > 120)
+        {
+            errors.Add(new ValidationError
+            {
+                Field = nameof(product.Name),
+                Message = "Product name is too long (120)"
             });
         }
 
-        if (product.Name.Length > 120)
-        {
-            errors.Add(new ValidationError
-                {
-                    Name = nameof(product.Name),
-                    Message = "Product name is too long (120)"
-                }
-            );
-        }
 
-        if (product.Price <= 0)
-        {
-            errors.Add(new ValidationError
-                {
-                    Name = nameof(product.Price),
-                    Message = "Price is greater than zero"
-                }
-            );
-        }
-
-        if (!Enum.IsDefined(product.Type))
+        if(product.Price == null || product.Price <= 0)
         {
             errors.Add(new ValidationError
             {
-                Name = nameof(product.Type),
+                Field = nameof(product.Price),
+                Message = "Price must be greater than zero"
+            });
+        }
+
+
+        if(product.Type == null)
+        {
+            errors.Add(new ValidationError
+            {
+                Field = nameof(product.Type),
+                Message = "Type is required"
+            });
+        }
+        else if(!Enum.IsDefined(typeof(ProductType), product.Type))
+        {
+            errors.Add(new ValidationError
+            {
+                Field = nameof(product.Type),
                 Message = "Type is invalid"
             });
         }
 
-        
+
         return errors;
-        
     }
-    
 }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using CucaLanches.Application.Exceptions;
 using CucaLanches.Application.Products.DTOs;
 using CucaLanches.Application.Products.Interfaces;
 using CucaLanches.Application.Validators;
@@ -19,6 +20,11 @@ public class ProductService:IProductService
     public async Task<List<ProductResponseDTO>> GetAllAsync()
     {
         var result = await _repository.GetAll();
+
+        if (!result.Any())
+        {
+            throw new NotFoundException("Product not found");
+        }
         
         var response = result.Select(p => new ProductResponseDTO
         {
@@ -35,11 +41,12 @@ public class ProductService:IProductService
 
     public async Task<ProductResponseDTO> GetByIdAsync(int id)
     {
+        
         var result = await _repository.GetById(id);
 
         if (result == null)
         {
-            throw new Exception("Product not found");
+            throw new NotFoundException("Product not found");
         }
 
         var productDto = new ProductResponseDTO
@@ -62,15 +69,15 @@ public class ProductService:IProductService
 
      if (errors.Any())
      {
-         throw new Exception("error in validating product");
+         throw new ValidationException(errors);
      }
 
      var product = new Product()
      {
-         Name = request.Name,
-         Type = request.Type,
+         Name = request.Name!,
+         Type = request.Type.Value,
          Description = request.Description,
-         Price = request.Price,
+         Price = request.Price.Value,
          Active = true
      };
      
@@ -92,17 +99,24 @@ public class ProductService:IProductService
 
     public async Task<ProductResponseDTO> UpdateAsync(int id, ProductRequestDTO productRequestDto)
     {
-        var product = await _repository.GetById(id);
+       var errors =  ProductValidator.IsValid(productRequestDto);
+
+       if (errors.Any())
+       {
+           throw new ValidationException(errors);
+       }
+       
+       var product = await _repository.GetById(id);
 
         if (product == null)
         {
-            throw new Exception("Product not found");
+            throw new NotFoundException("Product not found");
         }
         
         product.Name = productRequestDto.Name;
         product.Description = productRequestDto.Description;
-        product.Price = productRequestDto.Price;
-        product.Type = productRequestDto.Type;
+        product.Price = productRequestDto.Price.Value;
+        product.Type = productRequestDto.Type.Value;
 
         await _repository.UpdateAsync(product);
 
@@ -125,7 +139,7 @@ public class ProductService:IProductService
 
         if (product == null)
         {
-            throw new Exception("This item is not found");
+            throw new NotFoundException("Product not found");
         }
         
         product.Active = false;
