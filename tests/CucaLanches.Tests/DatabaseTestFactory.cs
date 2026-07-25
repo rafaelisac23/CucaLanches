@@ -38,10 +38,16 @@ public class DatabaseTestFactory:WebApplicationFactory<Program>//Aqui ele herda 
                 //instancia um scope  
                 var provider = services.BuildServiceProvider();
                 using var scope = provider.CreateScope();
+                
+               
                 var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                 //cria o banco 
                 context.Database.EnsureCreated();
+                
+                
             });
+            
+            
   
         }
  

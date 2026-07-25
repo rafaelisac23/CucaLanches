@@ -12,7 +12,6 @@ public class HealthTests:IClassFixture<DatabaseTestFactory>
     }
 
     [Fact]
-
     public async Task Health_return_Ok200()
     {
         var response = await _client.GetAsync("health");
