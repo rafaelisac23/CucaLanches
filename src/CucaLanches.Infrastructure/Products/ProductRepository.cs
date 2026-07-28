@@ -20,7 +20,7 @@ public class ProductRepository:IProductRepository
     return await _dbContext.Products.AsNoTracking().ToListAsync();
     }
 
-    public async Task<Product> GetById(int id)
+    public async Task<Product?> GetById(int id)
     {
        return await _dbContext.Products.AsNoTracking().FirstOrDefaultAsync(p=> p.Id == id);
     }

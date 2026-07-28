@@ -1,9 +1,12 @@
 using CucaLanches.Api.Middlewares;
+using CucaLanches.Application.Neighborhoods.Interfaces;
+using CucaLanches.Application.Neighborhoods.Services;
 using CucaLanches.Application.Products.Interfaces;
 using CucaLanches.Application.Products.Services;
 using CucaLanches.Application.PublicMenu.Interfaces;
 using CucaLanches.Application.PublicMenu.Services;
 using CucaLanches.Infrastructure.DependencyInjection;
+using CucaLanches.Infrastructure.Neighborhoods;
 using CucaLanches.Infrastructure.Products;
 using CucaLanches.Infrastructure.PublicMenu;
 
@@ -28,6 +31,9 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IPublicMenuService, PublicMenuService>();
 builder.Services.AddScoped<IPublicMenuRepository, PublicMenuRepository>();
+builder.Services.AddScoped<INeighborhoodRepository, NeighborhoodRepository>();
+builder.Services.AddScoped<INeighborhoodService,NeighborhoodService>();
+
 
 var app = builder.Build();
 

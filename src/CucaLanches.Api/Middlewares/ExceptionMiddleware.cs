@@ -32,7 +32,16 @@ public class ExceptionMiddleware
                     break;
                 
                 case ValidationException validationException:
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                    if (validationException.CodeStatus.HasValue)
+                    {
+                        context.Response.StatusCode = validationException.CodeStatus.Value;
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    }
+                    
                     await context.Response.WriteAsJsonAsync(new
                     {
                         StatusCode = StatusCodes.Status400BadRequest,
