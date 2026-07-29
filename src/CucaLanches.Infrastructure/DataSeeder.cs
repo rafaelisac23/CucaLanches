@@ -21,7 +21,7 @@ public static class DataSeeder
 
             if (!db.StoreSettings.Any())
             {
-                db.StoreSettings.Add(new StoreSettings
+                db.StoreSettings.Add(new StoreSetting
                 {
                     IsOpen =  true
                 });

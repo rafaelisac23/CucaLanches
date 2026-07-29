@@ -12,7 +12,7 @@ public class AppDbContext:DbContext
     public DbSet<Product> Products=> Set<Product>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Neighborhood> Neighborhoods=> Set<Neighborhood>();
-    public DbSet<StoreSettings> StoreSettings => Set<StoreSettings>();
+    public DbSet<StoreSetting> StoreSettings => Set<StoreSetting>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {

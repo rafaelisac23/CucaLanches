@@ -5,10 +5,13 @@ using CucaLanches.Application.Products.Interfaces;
 using CucaLanches.Application.Products.Services;
 using CucaLanches.Application.PublicMenu.Interfaces;
 using CucaLanches.Application.PublicMenu.Services;
+using CucaLanches.Application.StoreSettings.Interfaces;
+using CucaLanches.Application.StoreSettings.Services;
 using CucaLanches.Infrastructure.DependencyInjection;
 using CucaLanches.Infrastructure.Neighborhoods;
 using CucaLanches.Infrastructure.Products;
 using CucaLanches.Infrastructure.PublicMenu;
+using CucaLanches.Infrastructure.StoreSettings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +36,8 @@ builder.Services.AddScoped<IPublicMenuService, PublicMenuService>();
 builder.Services.AddScoped<IPublicMenuRepository, PublicMenuRepository>();
 builder.Services.AddScoped<INeighborhoodRepository, NeighborhoodRepository>();
 builder.Services.AddScoped<INeighborhoodService,NeighborhoodService>();
+builder.Services.AddScoped<IStoreSettingService, StoreSettingService>();
+builder.Services.AddScoped<IStoreSettingRepository, StoreSettingRepository>();
 
 
 var app = builder.Build();
