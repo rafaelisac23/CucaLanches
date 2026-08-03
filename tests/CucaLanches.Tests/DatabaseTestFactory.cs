@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CucaLanches.Tests;
@@ -17,6 +18,8 @@ public class DatabaseTestFactory:WebApplicationFactory<Program>//Aqui ele herda 
     
     protected override void ConfigureWebHost(IWebHostBuilder builder) //como nao sou eu que chamo esse método e sim o webApplicationFactory estou reescrevendo ele
         {
+            builder.UseEnvironment("Testing");
+            
             _connection.Open(); // cria a conexão com o banco dosqlite
  
             //Como quero acessar e modificar os serviços da minha aplicação, vou acessar a area de serviços
@@ -25,7 +28,7 @@ public class DatabaseTestFactory:WebApplicationFactory<Program>//Aqui ele herda 
             builder.ConfigureServices(services =>
             {
 
-                builder.UseEnvironment("Testing");
+               
 
                 var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
    
@@ -46,9 +49,6 @@ public class DatabaseTestFactory:WebApplicationFactory<Program>//Aqui ele herda 
                 
                 
             });
-            
-            
-  
         }
  
         protected override void Dispose(bool disposing)

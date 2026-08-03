@@ -13,6 +13,8 @@ public class AppDbContext:DbContext
     public DbSet<User> Users => Set<User>();
     public DbSet<Neighborhood> Neighborhoods=> Set<Neighborhood>();
     public DbSet<StoreSetting> StoreSettings => Set<StoreSetting>();
+    public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Address> Addresses => Set<Address>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -33,6 +35,22 @@ public class AppDbContext:DbContext
         {
             p.HasIndex(e => e.Name).IsUnique();
             p.Property(e=> e.DeliveryFee).HasPrecision(10, 2);
+        });
+
+        mb.Entity<Client>(c =>
+        {
+            c.HasIndex(e => e.Phone).IsUnique();
+            c.Property(e => e.Phone).HasMaxLength(15);
+            c.Property(e => e.Name).HasMaxLength(120);
+        });
+
+        mb.Entity<Address>(e =>
+        {
+            e.HasOne(x => x.Client).WithMany(c => c.Addresses).HasForeignKey(x => x.ClientId);
+            e.HasOne(x => x.Neighborhood).WithMany().HasForeignKey(x => x.NeighborhoodId)
+                .OnDelete(DeleteBehavior.Restrict);
+            e.Property(x => x.Cep).HasMaxLength(9);
+            e.Property(x => x.StreetName).HasMaxLength(150);
         });
     }
     

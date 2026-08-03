@@ -1,4 +1,6 @@
 using CucaLanches.Api.Middlewares;
+using CucaLanches.Application.Clients.Interfaces;
+using CucaLanches.Application.Clients.Services;
 using CucaLanches.Application.Neighborhoods.Interfaces;
 using CucaLanches.Application.Neighborhoods.Services;
 using CucaLanches.Application.Products.Interfaces;
@@ -7,11 +9,14 @@ using CucaLanches.Application.PublicMenu.Interfaces;
 using CucaLanches.Application.PublicMenu.Services;
 using CucaLanches.Application.StoreSettings.Interfaces;
 using CucaLanches.Application.StoreSettings.Services;
+using CucaLanches.Infrastructure;
+using CucaLanches.Infrastructure.Clients;
 using CucaLanches.Infrastructure.DependencyInjection;
 using CucaLanches.Infrastructure.Neighborhoods;
 using CucaLanches.Infrastructure.Products;
 using CucaLanches.Infrastructure.PublicMenu;
 using CucaLanches.Infrastructure.StoreSettings;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +43,8 @@ builder.Services.AddScoped<INeighborhoodRepository, NeighborhoodRepository>();
 builder.Services.AddScoped<INeighborhoodService,NeighborhoodService>();
 builder.Services.AddScoped<IStoreSettingService, StoreSettingService>();
 builder.Services.AddScoped<IStoreSettingRepository, StoreSettingRepository>();
+builder.Services.AddScoped<IClientService,ClientService>();
+builder.Services.AddScoped<IClientRepository, ClientRepository>();
 
 
 var app = builder.Build();
@@ -56,6 +63,16 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    db.Database.Migrate();
+    await DataSeeder.SeedAsync(db);
+}
 
 app.Run();
 

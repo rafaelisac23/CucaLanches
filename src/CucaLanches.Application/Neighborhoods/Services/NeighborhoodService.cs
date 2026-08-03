@@ -123,7 +123,7 @@ public class NeighborhoodService:INeighborhoodService
                 },409);
             }
 
-            neighborhood.Name = request.Name;
+            neighborhood.Name = request.Name.Trim();
         }
 
         if (request.DeliveryFee.HasValue)

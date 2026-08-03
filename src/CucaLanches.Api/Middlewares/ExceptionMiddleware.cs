@@ -44,7 +44,7 @@ public class ExceptionMiddleware
                     
                     await context.Response.WriteAsJsonAsync(new
                     {
-                        StatusCode = StatusCodes.Status400BadRequest,
+                        StatusCode = validationException.CodeStatus ?? StatusCodes.Status400BadRequest,
                         Message = validationException.Message,
                         Error = validationException.Errors
 
