@@ -1,4 +1,5 @@
 using System.Net;
+using CucaLanches.Application.Addresses.DTOs;
 using CucaLanches.Application.Clients.DTOs;
 using CucaLanches.Application.Clients.Interfaces;
 using CucaLanches.Application.Common;
@@ -42,7 +43,17 @@ public class ClientService:IClientService
             Id = client.id,
             Name = client.Name,
             Phone = client.Phone,
-            Addresses = client.Addresses,
+            Addresses = client.Addresses.Select(a => new AddressSumaryDTO
+            {
+                Id = a.Id,
+                Cep = a.Cep,
+                StreetName = a.StreetName,
+                HouseNumber = a.HouseNumber,
+                Description = a.Description,
+                NeighborhoodId = a.NeighborhoodId,
+                NeighborhoodName = a.Neighborhood.Name,
+                DeliveryFee = a.Neighborhood.DeliveryFee
+            }).ToList(),
             Email = client.Email,
         };
         
@@ -79,7 +90,7 @@ public class ClientService:IClientService
        var client = new Client
        {
            Phone = normalizedPhone,
-           Name = request.Name,
+           Name = request.Name!,
            Email = request.Email,
            CreatedAt = DateTime.Now
        };
@@ -92,7 +103,17 @@ public class ClientService:IClientService
             Name = client.Name,
             Email = client.Email,
             Id =  client.id,
-            Addresses =  client.Addresses,
+            Addresses = client.Addresses.Select(a => new AddressSumaryDTO
+            {
+                Id = a.Id,
+                Cep = a.Cep,
+                StreetName = a.StreetName,
+                HouseNumber = a.HouseNumber,
+                Description = a.Description,
+                NeighborhoodId = a.NeighborhoodId,
+                NeighborhoodName = a.Neighborhood.Name,
+                DeliveryFee = a.Neighborhood.DeliveryFee
+            }).ToList(),
         };
         
         return clientDto;
@@ -162,7 +183,17 @@ public class ClientService:IClientService
             Id = client.id,
             Name = client.Name,
             Phone = client.Phone,
-            Addresses = client.Addresses,
+            Addresses = client.Addresses.Select(a => new AddressSumaryDTO
+            {
+                Id = a.Id,
+                Cep = a.Cep,
+                StreetName = a.StreetName,
+                HouseNumber = a.HouseNumber,
+                Description = a.Description,
+                NeighborhoodId = a.NeighborhoodId,
+                NeighborhoodName = a.Neighborhood.Name,
+                DeliveryFee = a.Neighborhood.DeliveryFee
+            }).ToList(),
             Email = client.Email,
         };
         

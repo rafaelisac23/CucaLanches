@@ -1,4 +1,6 @@
 using CucaLanches.Api.Middlewares;
+using CucaLanches.Application.Addresses.Interfaces;
+using CucaLanches.Application.Addresses.Services;
 using CucaLanches.Application.Clients.Interfaces;
 using CucaLanches.Application.Clients.Services;
 using CucaLanches.Application.Neighborhoods.Interfaces;
@@ -10,6 +12,7 @@ using CucaLanches.Application.PublicMenu.Services;
 using CucaLanches.Application.StoreSettings.Interfaces;
 using CucaLanches.Application.StoreSettings.Services;
 using CucaLanches.Infrastructure;
+using CucaLanches.Infrastructure.Addresses;
 using CucaLanches.Infrastructure.Clients;
 using CucaLanches.Infrastructure.DependencyInjection;
 using CucaLanches.Infrastructure.Neighborhoods;
@@ -45,6 +48,8 @@ builder.Services.AddScoped<IStoreSettingService, StoreSettingService>();
 builder.Services.AddScoped<IStoreSettingRepository, StoreSettingRepository>();
 builder.Services.AddScoped<IClientService,ClientService>();
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IAddressService,AddressService>();
 
 
 var app = builder.Build();

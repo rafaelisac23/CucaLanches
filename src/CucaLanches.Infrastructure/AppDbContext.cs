@@ -49,7 +49,7 @@ public class AppDbContext:DbContext
             e.HasOne(x => x.Client).WithMany(c => c.Addresses).HasForeignKey(x => x.ClientId);
             e.HasOne(x => x.Neighborhood).WithMany().HasForeignKey(x => x.NeighborhoodId)
                 .OnDelete(DeleteBehavior.Restrict);
-            e.Property(x => x.Cep).HasMaxLength(9);
+            e.Property(x => x.Cep).HasMaxLength(8);
             e.Property(x => x.StreetName).HasMaxLength(150);
         });
     }

@@ -52,6 +52,9 @@ public class ExceptionMiddleware
                     break;
                 
                 default:
+
+                    Console.WriteLine("O erro esta aqui a baixo ó !!!!!!!!!!!!!!!!!!!!!!!!!:");
+                    Console.WriteLine(ex);
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     await context.Response.WriteAsJsonAsync(new
                     {

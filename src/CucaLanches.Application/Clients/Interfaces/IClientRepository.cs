@@ -9,4 +9,6 @@ public interface IClientRepository
     Task<Client?> GetByIdAsync(int id);
     Task AddAsync(Client client);
     Task PatchAsync(Client client);
+    Task<bool> ExistAsync(int id);
+    
 }

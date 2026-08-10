@@ -43,5 +43,10 @@ public class ClientRepository:IClientRepository
         _dbContext.Clients.Update(client);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<bool> ExistAsync(int id)
+    {
+        return await _dbContext.Clients.AnyAsync(c => c.id == id);
+    }
     
 }

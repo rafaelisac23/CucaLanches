@@ -10,5 +10,6 @@ public interface INeighborhoodRepository
     Task<Neighborhood?> GetById(int id);
     Task AddAync (Neighborhood  neighborhood);
     Task UpdateAync (Neighborhood  neighborhood);
+    Task<bool> ExistAsync(int id);
     Task DeleteAsync (Neighborhood  neighborhood);
 }

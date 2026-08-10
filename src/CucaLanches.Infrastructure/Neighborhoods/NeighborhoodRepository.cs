@@ -50,7 +50,12 @@ public class NeighborhoodRepository:INeighborhoodRepository
     {
         await UpdateOrDisactive(neighborhood);
     }
-    
+
+    public async Task<bool> ExistAsync(int id)
+    {
+        return await _dbContext.Neighborhoods.AnyAsync(n => n.Id == id);
+    }
+
     public async Task UpdateOrDisactive(Neighborhood neighborhood)
     {
         _dbContext.Neighborhoods.Update(neighborhood);
