@@ -15,6 +15,8 @@ public class AppDbContext:DbContext
     public DbSet<StoreSetting> StoreSettings => Set<StoreSetting>();
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<Address> Addresses => Set<Address>();
+    public DbSet<Order> Orders => Set<Order>();
+    public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -51,6 +53,23 @@ public class AppDbContext:DbContext
                 .OnDelete(DeleteBehavior.Restrict);
             e.Property(x => x.Cep).HasMaxLength(8);
             e.Property(x => x.StreetName).HasMaxLength(150);
+        });
+        
+        mb.Entity<Order>(e =>
+        {
+            e.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
+            e.Property(x => x.PaymentMethod).HasConversion<string>().HasMaxLength(10);
+            e.Property(x => x.DeliveryFee).HasPrecision(10, 2);
+            e.Property(x => x.TotalPrice).HasPrecision(10, 2);
+            e.Property(x => x.CashChangeFor).HasPrecision(10, 2);
+            e.HasOne(x => x.Address).WithMany().HasForeignKey(x => x.AddressId).OnDelete(DeleteBehavior.Restrict);
+            e.HasIndex(x => x.CreatedAt);
+        });
+        
+        mb.Entity<OrderItem>(e =>
+        {
+            e.Property(x => x.UnitPrice).HasPrecision(10, 2);
+            e.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
         });
     }
     
