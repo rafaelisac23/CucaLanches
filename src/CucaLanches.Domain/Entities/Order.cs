@@ -39,7 +39,7 @@ public class Order
         StatusChangedAt = DateTime.UtcNow;
     }
     
-    public void RecalculateTotal() => TotalPrice = Items.Sum(i=>i.Quantity+ i.UnitPrice) + DeliveryFee;
+    public void RecalculateTotal() => TotalPrice = Items.Sum(i=>i.Quantity* i.UnitPrice) + DeliveryFee;
     
     
 }

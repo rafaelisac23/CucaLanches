@@ -17,6 +17,7 @@ public class AppDbContext:DbContext
     public DbSet<Address> Addresses => Set<Address>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+    public DbSet<OrderSequence> OrderSequences => Set<OrderSequence>();
 
     protected override void OnModelCreating(ModelBuilder mb)
     {
@@ -70,6 +71,11 @@ public class AppDbContext:DbContext
         {
             e.Property(x => x.UnitPrice).HasPrecision(10, 2);
             e.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        mb.Entity<OrderSequence>(e =>
+        {
+            e.HasKey(x => x.Date);
         });
     }
     

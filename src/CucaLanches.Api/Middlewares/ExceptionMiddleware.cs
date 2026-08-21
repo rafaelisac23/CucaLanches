@@ -51,6 +51,29 @@ public class ExceptionMiddleware
                     });
                     break;
                 
+                case InvalidOperationException invalidOperationException:
+                    
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        StatusCode = 400,
+                        Message = invalidOperationException.Message,
+                    });
+                    break;
+                
+                case OrderRuleException orderRuleException:
+                    
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Message = orderRuleException.Message,
+                    });
+                    
+                    break;
+                
                 default:
 
                     Console.WriteLine("O erro esta aqui a baixo ó !!!!!!!!!!!!!!!!!!!!!!!!!:");
@@ -59,7 +82,7 @@ public class ExceptionMiddleware
                     await context.Response.WriteAsJsonAsync(new
                     {
                         StatusCode = StatusCodes.Status500InternalServerError,
-                        Message = "Internal server error",
+                        
                     });
                     break;
             }
