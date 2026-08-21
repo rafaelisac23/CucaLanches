@@ -11,17 +11,11 @@ using Xunit.Abstractions;
 namespace CucaLanches.Tests.Integration;
 
 
-public class OrderTests:IClassFixture<DatabaseTestFactory>
+public class OrderTests:BaseIntegrationTest
 {
-    private readonly HttpClient _client;
-    private readonly DatabaseTestFactory _factory;
-    private readonly ITestOutputHelper _output;
-
-    public OrderTests(DatabaseTestFactory factory, ITestOutputHelper output)
+    
+    public OrderTests(DatabaseTestFactory factory) : base(factory)
     {
-        _client = factory.CreateClient();
-        _factory = factory;
-        _output = output;
     }
 
 
@@ -29,7 +23,7 @@ public class OrderTests:IClassFixture<DatabaseTestFactory>
     public async Task First_order_on_day_ConcurrentRequests_ShouldAssignSequentialNumbersWithoutErrors()
     {
 
-       var openResponse =  await _client.PatchAsJsonAsync("/store/status", new { isOpen = true });
+       var openResponse =  await Client.PatchAsJsonAsync("/store/status", new { isOpen = true });
        
        Assert.Equal(HttpStatusCode.OK, openResponse.StatusCode);
 
@@ -41,7 +35,7 @@ public class OrderTests:IClassFixture<DatabaseTestFactory>
            price = 8
        };
        
-       var newProduct = await  _client.PostAsJsonAsync("/Product", newJsonProduct);
+       var newProduct = await  Client.PostAsJsonAsync("/Product", newJsonProduct);
        
        Assert.Equal(HttpStatusCode.OK, newProduct.StatusCode);
 
@@ -53,7 +47,7 @@ public class OrderTests:IClassFixture<DatabaseTestFactory>
            email = "rafaeldarrigo@gmail.com"
        };
        
-       var newCLient = await  _client.PostAsJsonAsync("/api/Client", newJsonCLient);
+       var newCLient = await  Client.PostAsJsonAsync("/api/Client", newJsonCLient);
        
        Assert.Equal(HttpStatusCode.OK, newCLient.StatusCode);
 
@@ -64,12 +58,18 @@ public class OrderTests:IClassFixture<DatabaseTestFactory>
            isAvaible = true
        };
        
-       var newNeighborhood = await _client.PostAsJsonAsync("/Neighborhood", newJsonNeighborhood);
+       var newNeighborhood = await Client.PostAsJsonAsync("/Neighborhood", newJsonNeighborhood);
        
        Assert.Equal(HttpStatusCode.OK, newNeighborhood.StatusCode);
        
        var newNeighborhoodResponse = await newNeighborhood.Content.ReadFromJsonAsync<NeighborhoodResponseDTO>();
        var newClientResponse = await newCLient.Content.ReadFromJsonAsync<ClientResponseDTO>();
+       
+       // ADICIONE ESTES CONSOLE.WRITELINE PARA DIAGNOSTICAR:
+       Console.WriteLine($"Client ID retornado: {newClientResponse?.Id}");
+       Console.WriteLine($"Neighborhood ID retornado: {newNeighborhoodResponse?.Id}");
+       
+       
        var newProductResponse = await newProduct.Content.ReadFromJsonAsync<ProductResponseDTO>();
        
        var newJsonAddress = new
@@ -82,13 +82,13 @@ public class OrderTests:IClassFixture<DatabaseTestFactory>
            description = "string"
        };
 
-       var newAddress = await _client.PostAsJsonAsync("/api/Address", newJsonAddress);
+       var newAddress = await Client.PostAsJsonAsync("/api/Address", newJsonAddress);
        Assert.Equal(HttpStatusCode.OK, newAddress.StatusCode);
        
        var newAddressResponse = await newAddress.Content.ReadFromJsonAsync<AddressResponseDTO>();
        
        
-       var client1= _factory.CreateClient();
+       var client1= Factory.CreateClient();
        
          var payload1 = new
          {
@@ -107,15 +107,7 @@ public class OrderTests:IClassFixture<DatabaseTestFactory>
          };
 
          var task = await client1.PostAsJsonAsync("/Order", payload1);
-
-         var status = new
-         {
-             statusCode = task.StatusCode,
-             body = await task.Content.ReadAsStringAsync()
-         };
-
-         _output.WriteLine($"======== a partir daqui : {status}");
-
+        
          Assert.Equal(HttpStatusCode.OK,task.StatusCode);
     }
     

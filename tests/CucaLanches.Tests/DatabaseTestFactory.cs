@@ -1,60 +1,82 @@
+using System.Data.Common;
 using CucaLanches.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
+using Respawn;
+using Respawn.Graph;
+using Xunit;
 
 namespace CucaLanches.Tests;
 
-/*Criei essa classe para fazer com que ele modifique o padrão de serviços do meu projeto para que possa ser usado
- no meu projeto de testes
-*/
-public class DatabaseTestFactory:WebApplicationFactory<Program>//Aqui ele herda pq o .net ja sabe construir a aplicação,so quero alterala
+public class DatabaseTestFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    
-    private readonly SqliteConnection _connection = new ("DataSource=:memory:");
-    
-    protected override void ConfigureWebHost(IWebHostBuilder builder) //como nao sou eu que chamo esse método e sim o webApplicationFactory estou reescrevendo ele
-        {
-            builder.UseEnvironment("Testing");
-            
-            _connection.Open(); // cria a conexão com o banco dosqlite
- 
-            //Como quero acessar e modificar os serviços da minha aplicação, vou acessar a area de serviços
-            //o padrão da microsoft disponibiliza um metodo para que eu acesse essa área
+    private string _connectionString = string.Empty;
+    private DbConnection _dbConnection = default!;
+    private Respawner _respawner = default!;
 
-            builder.ConfigureServices(services =>
+    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    {
+        builder.UseEnvironment("Testing");
+
+        builder.ConfigureServices((context, services) =>
+        {
+            var connectionString = context.Configuration.GetConnectionString("DefaultConnection")!;
+
+            // 1. Remove o DbContext original
+            var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+            if (descriptor != null) services.Remove(descriptor);
+
+            // 2. Configura o DbContext para os testes com MySQL
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+            // 3. Garante que as tabelas sejam criadas no Docker
+            var provider = services.BuildServiceProvider();
+            using var scope = provider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            dbContext.Database.EnsureCreated();
+        });
+    }
+
+    public async Task InitializeAsync()
+    {
+        // FORÇA a criação do Host do .NET. Isso executa o ConfigureWebHost 
+        // e carrega o IConfiguration a partir do appsettings.Testing.json
+        var configuration = Services.GetRequiredService<IConfiguration>();
+        _connectionString = configuration.GetConnectionString("DefaultConnection")!;
+
+        // Agora a _connectionString possui o valor correto!
+        _dbConnection = new MySqlConnection(_connectionString);
+        await _dbConnection.OpenAsync();
+
+        // Configura o Respawn para o MySQL
+        _respawner = await Respawner.CreateAsync(_dbConnection, new RespawnerOptions
+        {
+            DbAdapter = DbAdapter.MySql,
+            TablesToIgnore = new Table[]
             {
+                "__EFMigrationsHistory"
+            }
+        });
+    }
 
-               
+    public async Task ResetDatabaseAsync()
+    {
+        await _respawner.ResetAsync(_dbConnection);
+    }
 
-                var descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-   
-                //remove do IServiceCollection 
-                if(descriptor != null) services.Remove(descriptor);
-
-                //cria uma nova receita de banco usando sqliteinmemory
-                services.AddDbContext<AppDbContext>(options => options.UseSqlite(_connection));
-   
-                //instancia um scope  
-                var provider = services.BuildServiceProvider();
-                using var scope = provider.CreateScope();
-                
-               
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                //cria o banco 
-                context.Database.EnsureCreated();
-                
-                
-            });
-        }
- 
-        protected override void Dispose(bool disposing)
+    public new async Task DisposeAsync()
+    {
+        if (_dbConnection != null)
         {
-            _connection.Dispose();
-            base.Dispose(disposing);
+            await _dbConnection.CloseAsync();
+            await _dbConnection.DisposeAsync();
         }
-    
+        await base.DisposeAsync();
+    }
 }

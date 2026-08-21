@@ -11,22 +11,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace CucaLanches.Tests.Integration;
 
-public class ProductTests:IClassFixture<DatabaseTestFactory>
+public class ProductTests:BaseIntegrationTest
 {
-    private readonly DatabaseTestFactory _factory;
-    private readonly HttpClient _client;
-
-    public ProductTests(DatabaseTestFactory factory)
+    
+    public ProductTests(DatabaseTestFactory factory) : base(factory)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
     }
 
 
     [Fact]
     public async Task Verify_response_created_200()
     {
-        var response = await _client.PostAsJsonAsync("/Product", new {
+        var response = await Client.PostAsJsonAsync("/Product", new {
             name = "Hamburguer",
             type = 1,
             description = "teste do ProductsTest",
@@ -39,7 +35,7 @@ public class ProductTests:IClassFixture<DatabaseTestFactory>
     [Fact]
     public async Task Post_Price_0_returns_400()
     {
-        var response = await _client.PostAsJsonAsync("/Product", new {
+        var response = await Client.PostAsJsonAsync("/Product", new {
             name = "Hamburguer",
             type = 1,
             description = "teste do ProductsTest",
@@ -52,7 +48,7 @@ public class ProductTests:IClassFixture<DatabaseTestFactory>
     [Fact]
     public async Task Get_Unknown_id_returns_404()
     {
-        var response = await _client.GetAsync("/Product/9999");
+        var response = await Client.GetAsync("/Product/9999");
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -69,7 +65,7 @@ public class ProductTests:IClassFixture<DatabaseTestFactory>
             Type = ProductType.Lunch
         };
         
-        var response = await _client.PostAsJsonAsync("/Product", request);
+        var response = await Client.PostAsJsonAsync("/Product", request);
         
         //Arrange
         
@@ -79,12 +75,12 @@ public class ProductTests:IClassFixture<DatabaseTestFactory>
         
         //Act
 
-         var deletedProduct =  await _client.DeleteAsync($"/Product/{newProduct.Id}");
+         var deletedProduct =  await Client.DeleteAsync($"/Product/{newProduct.Id}");
          
          Assert.Equal(HttpStatusCode.OK, deletedProduct.StatusCode);
          
         //ASSERT
-        using var scope = _factory.Services.CreateScope();
+        using var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         
         var product = await db.Products.FindAsync(newProduct.Id);

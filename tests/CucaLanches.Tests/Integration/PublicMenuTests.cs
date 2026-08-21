@@ -6,16 +6,11 @@ using CucaLanches.Domain.Enums;
 
 namespace CucaLanches.Tests.Integration;
 
-public class PublicMenuTests:IClassFixture<DatabaseTestFactory>
+public class PublicMenuTests:BaseIntegrationTest
 {
     
-    private readonly DatabaseTestFactory _factory;
-    private readonly HttpClient _client;
-
-    public PublicMenuTests(DatabaseTestFactory factory)
+    public PublicMenuTests(DatabaseTestFactory factory) : base(factory)
     {
-        _factory = factory;
-        _client = _factory.CreateClient();
     }
 
     [Fact]
@@ -38,19 +33,19 @@ public class PublicMenuTests:IClassFixture<DatabaseTestFactory>
         };
         
         
-        var newProduct = await _client.PostAsJsonAsync("/Product", product1);
-        var newProduct2 = await _client.PostAsJsonAsync("/Product", product2);
+        var newProduct = await Client.PostAsJsonAsync("/Product", product1);
+        var newProduct2 = await Client.PostAsJsonAsync("/Product", product2);
         
         
         Assert.Equal(HttpStatusCode.OK, newProduct.StatusCode);
 
         var productinformations = await newProduct.Content.ReadFromJsonAsync<ProductResponseDTO>();
         
-        var desactivateProduct = await _client.DeleteAsync($"/Product/{productinformations.Id}");
+        var desactivateProduct = await Client.DeleteAsync($"/Product/{productinformations.Id}");
         
         Assert.Equal(HttpStatusCode.OK, desactivateProduct.StatusCode);
         
-        var GetAll = await _client.GetFromJsonAsync<List<PublicMenuResponseDTO>>("/PublicMenu");
+        var GetAll = await Client.GetFromJsonAsync<List<PublicMenuResponseDTO>>("/PublicMenu");
 
         var all = GetAll.SelectMany(group => group.Products);
         

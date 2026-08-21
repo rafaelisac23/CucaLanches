@@ -5,21 +5,18 @@ using CucaLanches.Domain.Entities;
 
 namespace CucaLanches.Tests.Integration;
 
-public class AddressTests:IClassFixture<DatabaseTestFactory>
+public class AddressTests:BaseIntegrationTest
 {
-
-    private readonly HttpClient _client;
     
-    public AddressTests(DatabaseTestFactory  factory)
+    public AddressTests(DatabaseTestFactory factory) : base(factory)
     {
-        _client = factory.CreateClient();
     }
 
 
     [Fact]
     public async Task When_request_and_found_a_avoidArray_return_404()
     {
-        var addresses = await _client.GetAsync("/api/Address");
+        var addresses = await Client.GetAsync("/api/Address");
         
         Assert.Equal(HttpStatusCode.NotFound, addresses.StatusCode);
     }
@@ -27,7 +24,7 @@ public class AddressTests:IClassFixture<DatabaseTestFactory>
     [Fact]
     public async Task If_send_a_post_with_Invalid_Client_return_404()
     {
-        var address = await _client.PostAsJsonAsync("/api/Address", new {
+        var address = await Client.PostAsJsonAsync("/api/Address", new {
             clientId= 99,
             neighborhoodId= 1,
             cep= "12519160",

@@ -6,26 +6,23 @@ using CucaLanches.Domain.Entities;
 
 namespace CucaLanches.Tests.Integration;
 
-public class NeighborhoodsTests:IClassFixture<DatabaseTestFactory>
+public class NeighborhoodsTests:BaseIntegrationTest
 {
     
-    private readonly HttpClient _Client;
-
-    public NeighborhoodsTests(DatabaseTestFactory factory)
+    public NeighborhoodsTests(DatabaseTestFactory factory) : base(factory)
     {
-        _Client = factory.CreateClient();
     }
 
     [Fact]
     public async Task Duplicate_Name_returns_409()
     {
-        await _Client.PostAsJsonAsync("/Neighborhood", new  {
+        await Client.PostAsJsonAsync("/Neighborhood", new  {
             id = 0,
             name = "string",
             deliveryFee = 0,
             isAvaible = true
         });
-        var dup = await _Client.PostAsJsonAsync("/Neighborhood", new  {
+        var dup = await Client.PostAsJsonAsync("/Neighborhood", new  {
             id = 0,
             name = "string",
             deliveryFee = 0,
@@ -39,12 +36,12 @@ public class NeighborhoodsTests:IClassFixture<DatabaseTestFactory>
     public async Task Public_list_hides_unavailable()
     {
         
-        await _Client.PostAsJsonAsync("/Neighborhood", new  {
+        await Client.PostAsJsonAsync("/Neighborhood", new  {
             name = "Jardim do vale",
             deliveryFee = 0,
             isAvaible = true
         });
-        var addedinactiveNeighborhood = await _Client.PostAsJsonAsync("/Neighborhood", new  {
+        var addedinactiveNeighborhood = await Client.PostAsJsonAsync("/Neighborhood", new  {
             name = "Jardim primavera",
             deliveryFee = 0,
             isAvaible = false
@@ -53,8 +50,8 @@ public class NeighborhoodsTests:IClassFixture<DatabaseTestFactory>
         
         var inactiveNeighborhood = await addedinactiveNeighborhood.Content.ReadFromJsonAsync<Neighborhood>();
         
-        var list = await _Client.GetFromJsonAsync<List<NeighborhoodResponseDTO>>("/Neighborhood");
-        var adminList = await _Client.GetFromJsonAsync<List<NeighborhoodResponseDTO>>("/Neighborhood?all=true");
+        var list = await Client.GetFromJsonAsync<List<NeighborhoodResponseDTO>>("/Neighborhood");
+        var adminList = await Client.GetFromJsonAsync<List<NeighborhoodResponseDTO>>("/Neighborhood?all=true");
         
         Assert.DoesNotContain(list, n => n.Id == inactiveNeighborhood.Id);
         Assert.Contains(adminList, n => n.Id == inactiveNeighborhood.Id);
@@ -64,7 +61,7 @@ public class NeighborhoodsTests:IClassFixture<DatabaseTestFactory>
     public async Task Negative_fee_returns_400()
     {
         
-        var NeighborhoodResponse = await _Client.PostAsJsonAsync("/Neighborhood", new  {
+        var NeighborhoodResponse = await Client.PostAsJsonAsync("/Neighborhood", new  {
             name = "JK",
             deliveryFee = -20,
             isAvaible = true

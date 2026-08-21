@@ -4,13 +4,11 @@ using CucaLanches.Domain.Entities;
 
 namespace CucaLanches.Tests.Integration;
 
-public class StoreSettingsTests:IClassFixture<DatabaseTestFactory>
+public class StoreSettingsTests:BaseIntegrationTest
 {
-    private readonly HttpClient _client;
-
-    public StoreSettingsTests(DatabaseTestFactory factory)
+    
+    public StoreSettingsTests(DatabaseTestFactory factory) : base(factory)
     {
-        _client = factory.CreateClient();
     }
 
     [Fact]
@@ -18,19 +16,19 @@ public class StoreSettingsTests:IClassFixture<DatabaseTestFactory>
     public async Task Toggle_changes_public_status()
     {
 
-        await _client.PatchAsJsonAsync("/store/status", new {
+        await Client.PatchAsJsonAsync("/store/status", new {
             isOpen = true
         });
 
-        var test1 = await _client.GetFromJsonAsync<StoreSettingsResponseDTO>("/store/status");
+        var test1 = await Client.GetFromJsonAsync<StoreSettingsResponseDTO>("/store/status");
         
         Assert.True(test1!.IsOpen);
         
-        await _client.PatchAsJsonAsync("/store/status", new {
+        await Client.PatchAsJsonAsync("/store/status", new {
             isOpen = false
         });
 
-        var test2 = await _client.GetFromJsonAsync<StoreSettingsResponseDTO>("/store/status");
+        var test2 = await Client.GetFromJsonAsync<StoreSettingsResponseDTO>("/store/status");
         
         Assert.False(test2!.IsOpen);
 

@@ -4,25 +4,23 @@ using CucaLanches.Application.Clients.DTOs;
 
 namespace CucaLanches.Tests.Integration;
 
-public class ClientTests:IClassFixture<DatabaseTestFactory>
+public class ClientTests:BaseIntegrationTest
 {
-
-    private readonly HttpClient _client;
-
-    public ClientTests(DatabaseTestFactory factory)
+    
+    public ClientTests(DatabaseTestFactory factory) : base(factory)
     {
-        _client = factory.CreateClient();
     }
-
+    
+    
     [Fact]
     public async Task New_phone_requires_name_and_creates()
     {
 
-        var offName = await _client.PostAsJsonAsync("/api/Client", new { phone = "5512991903030" });
+        var offName = await Client.PostAsJsonAsync("/api/Client", new { phone = "5512991903030" });
         
         Assert.Equal(HttpStatusCode.BadRequest, offName.StatusCode);
 
-        var newUser = await _client.PostAsJsonAsync("/api/Client", new {
+        var newUser = await Client.PostAsJsonAsync("/api/Client", new {
             name  = "Maria",
             phone = "55 (12)991903030",
         });
@@ -37,7 +35,7 @@ public class ClientTests:IClassFixture<DatabaseTestFactory>
     [Fact]
     public async Task Invalid_phone_returns_400()
     {
-         var withInvalidNumber = await _client.PostAsJsonAsync("/api/Client", new {
+         var withInvalidNumber = await Client.PostAsJsonAsync("/api/Client", new {
             name  = "X",
             phone = "123",
         });
