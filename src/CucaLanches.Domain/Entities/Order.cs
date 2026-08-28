@@ -1,3 +1,4 @@
+using System.Text;
 using CucaLanches.Domain.Enums;
 
 namespace CucaLanches.Domain.Entities;
@@ -26,20 +27,19 @@ public class Order
     public decimal? CashChangeFor { get; set; }
     public decimal DeliveryFee { get; set; }
     public decimal TotalPrice { get; private set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public List<OrderItem> Items { get; set; } = [];
 
 
-    public void AdvanceTo(OrderStatus next)
+    public  void AdvanceTo(OrderStatus next)
     {
         if (!Allowed[Status].Contains(next))
-            throw new InvalidOperationException($"Transição inválida: {Status} → {next}.");
+            throw new InvalidOperationException($"Invalid Transition: {Status} → {next}.");
         
         Status = next;
-        StatusChangedAt = DateTime.UtcNow;
+        StatusChangedAt = DateTime.Now;
     }
     
     public void RecalculateTotal() => TotalPrice = Items.Sum(i=>i.Quantity* i.UnitPrice) + DeliveryFee;
-    
-    
+
 }

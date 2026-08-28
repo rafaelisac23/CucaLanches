@@ -1,6 +1,7 @@
 using System.Data;
 using CucaLanches.Application.Orders.Interfaces;
 using CucaLanches.Domain.Entities;
+using CucaLanches.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using MySqlConnector;
@@ -19,7 +20,7 @@ public class OrderRepository:IOrderRepository
     
     private async Task<int> GetNextOrderNumberAsync()
     {
-        var today = DateTime.UtcNow.Date;
+        var today = DateTime.Now.Date;
         var connection = _dbContext.Database.GetDbConnection();
 
         if (connection.State != ConnectionState.Open)
@@ -80,5 +81,28 @@ public class OrderRepository:IOrderRepository
             .Include(o=>o.Items)
             .ThenInclude(o=>o.Product)
             .FirstOrDefaultAsync(o => o.Id == orderId);
+    }
+
+    public async Task<List<Order>> GetOrderByDateAndOrderStatus(DateTime date , OrderStatus status)
+    {
+
+        var startDate = date.Date;
+        var endDate = date.Date.AddDays(1);
+        
+        return await _dbContext.Orders.AsNoTracking()
+            .Include(o=>o.Address)
+            .Include(o=>o.Client)
+            .Include(o=>o.Address.Neighborhood)
+            .Include(o=>o.Items)
+            .ThenInclude(o=>o.Product)
+            .Where(o=> o.CreatedAt >= startDate
+                       && o.CreatedAt <= endDate
+                       && o.Status == status).ToListAsync();
+    }
+
+    public async Task ChangeStatusAsync(Order order)
+    {
+        _dbContext.Update(order);
+        await _dbContext.SaveChangesAsync();
     }
 }
