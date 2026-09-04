@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CucaLanches.Api.Controllers;
 
 [ApiController]
 [Route("health")]
+[Authorize(Policy = "AdminOnly")]
 public class HealthController:ControllerBase
 {
     [HttpGet]

@@ -20,8 +20,6 @@ public class ClientService:IClientService
     
     public async Task<ClientResponseDTO> IdentifyCLient(IdentifyClientRequestDTO request)
     {
-        
-        
         var normalizedPhone = PhoneNormalizer.Normalize(request.Phone);
 
         var errors = PhoneNumberValidator.IsValid(normalizedPhone,request);
