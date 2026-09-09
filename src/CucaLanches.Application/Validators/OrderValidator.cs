@@ -5,16 +5,16 @@ namespace CucaLanches.Application.Validators;
 
 public static class OrderValidator
 {
-    public static List<ValidationError> IsValid(CreateOrderRequestDto request)
+    public static List<ValidationError> IsValid(CreateOrderRequestDto request,int clientId)
     {
         var errors = new List<ValidationError>();
 
-        if (request.ClientId <= 0)
+        if (clientId<= 0)
         {
             errors.Add(new ValidationError
             {
-                Field = nameof(request.ClientId),
-                Message = $"{nameof(request.ClientId)} must be greater than zero."
+                Field = nameof(clientId),
+                Message = $"{nameof(clientId)} must be greater than zero."
             });
         }
         

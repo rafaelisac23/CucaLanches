@@ -1,12 +1,14 @@
 
 using CucaLanches.Application.Products.DTOs;
 using CucaLanches.Application.Products.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CucaLanches.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[Authorize(Policy = "AdminOnly")]
 public class ProductController:ControllerBase
 {
   private readonly IProductService _productService;

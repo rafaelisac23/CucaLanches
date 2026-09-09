@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using CucaLanches.Application.Clients.DTOs;
 using CucaLanches.Application.Clients.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CucaLanches.Api.Controllers;
@@ -31,10 +33,14 @@ public class ClientController:ControllerBase
       return Ok(newClient);
    }
 
-   [HttpPatch("{id:int}")]
-   public async Task<ActionResult<ClientResponseDTO>> PatchClient(int id,ClientUpdateRequestDTO request)
+   [HttpPatch]
+   [Authorize(Policy = "ClientOnly")]
+   public async Task<ActionResult<ClientResponseDTO>> PatchClient(ClientUpdateRequestDTO request)
    {
-      var updatedClient = await _clientService.UpdateClient(id,request);
+      
+      var clientid = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+      
+      var updatedClient = await _clientService.UpdateClient(clientid,request);
       return Ok(updatedClient);
    }
 }

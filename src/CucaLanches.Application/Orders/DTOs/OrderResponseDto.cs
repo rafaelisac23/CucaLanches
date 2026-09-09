@@ -7,7 +7,7 @@ public class OrderResponseDto
    public int Id {get; set;}
    public int OrderNumber { get; set; }
    public string? Status  { get; set; }
-   public PaymentMethod PaymentMethod { get; set; }
+   public string PaymentMethod { get; set; }
    public decimal? CashChangeFor { get; set; }
    public decimal DeliveryFee { get; set; }
    public decimal TotalPrice { get; set; }

@@ -27,12 +27,12 @@ public class OrderService:IOrderService
         _productRepository = productRepository;
     }
 
-    public async Task<OrderResponseDto> CreateAsync(CreateOrderRequestDto req)
+    public async Task<OrderResponseDto> CreateAsync(CreateOrderRequestDto req,int clientid)
     {
         var store = await _storeSettingRepository.Get();
         if (store is null || !store.IsOpen) throw new OrderRuleException("The Store is closed in this moment");
 
-        var errors = OrderValidator.IsValid(req);
+        var errors = OrderValidator.IsValid(req,clientid);
         
         if(errors.Any()) throw new ValidationException(errors);
 
@@ -40,7 +40,7 @@ public class OrderService:IOrderService
         
         if(address is null) throw new NotFoundException("This address is not found");
 
-        if (address.ClientId != req.ClientId) throw new OrderRuleException("This Address don't belong to this client");
+        if (address.ClientId != clientid) throw new OrderRuleException("This Address don't belong to this client");
 
         if (!address.Neighborhood.IsAvaliable) throw new OrderRuleException("Delivery to this neighborhood is currently unavailable");
 
@@ -50,7 +50,7 @@ public class OrderService:IOrderService
 
         var order = new Order
         {
-            ClientId = req.ClientId,
+            ClientId = clientid,
             AddressId = req.AddressId,
             PaymentMethod = req.PaymentMethod,
             CashChangeFor = req.CashChangeFor,
@@ -94,7 +94,7 @@ public class OrderService:IOrderService
                 Description = i.Description,
                 UnitPrice = i.UnitPrice
             }).ToList(),
-            PaymentMethod = createdOrder.PaymentMethod,
+            PaymentMethod = createdOrder.PaymentMethod.ToString(),
             OrderNumber = createdOrder.OrderNumber,
             Status = createdOrder.Status.ToString(),
             DeliveryFee = createdOrder.DeliveryFee,
@@ -133,7 +133,7 @@ public class OrderService:IOrderService
             CreatedAt = o.CreatedAt,
             Status = o.Status.ToString(),
             DeliveryFee = o.DeliveryFee,
-            PaymentMethod = o.PaymentMethod,
+            PaymentMethod = o.PaymentMethod.ToString(),
             TotalPrice = o.TotalPrice,
             Items = o.Items.Select(i=> new OrderItemResponseDto
             {
@@ -170,7 +170,7 @@ public class OrderService:IOrderService
             CreatedAt = order.CreatedAt,
             Status = order.Status.ToString(),
             DeliveryFee = order.DeliveryFee,
-            PaymentMethod = order.PaymentMethod,
+            PaymentMethod = order.PaymentMethod.ToString(),
             TotalPrice = order.TotalPrice,
             Items = order.Items.Select(i=> new OrderItemResponseDto
             {
@@ -216,7 +216,7 @@ public class OrderService:IOrderService
             CreatedAt = alteredOrder.CreatedAt,
             Status = alteredOrder.Status.ToString(),
             DeliveryFee = alteredOrder.DeliveryFee,
-            PaymentMethod = alteredOrder.PaymentMethod,
+            PaymentMethod = alteredOrder.PaymentMethod.ToString(),
             TotalPrice = alteredOrder.TotalPrice,
             Items = alteredOrder.Items.Select(i=> new OrderItemResponseDto
             {

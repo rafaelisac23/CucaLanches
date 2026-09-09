@@ -1,11 +1,13 @@
 using CucaLanches.Application.StoreSettings.DTOs;
 using CucaLanches.Application.StoreSettings.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CucaLanches.Api.Controllers;
 
 [ApiController]
 [Route("store")]
+
 public class StoreSettingsController:ControllerBase
 {
     
@@ -22,8 +24,9 @@ public class StoreSettingsController:ControllerBase
         var storeSetting = await _service.Get();
         return Ok(storeSetting);
     }
-    
+        
     [HttpPatch("status")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<StoreSettingsResponseDTO>> PatchStatus(StoreSettingsRequestDTO request)
     {
         var storeSetting = await _service.Patch(request);

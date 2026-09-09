@@ -1,5 +1,6 @@
 using CucaLanches.Application.Neighborhoods.DTOs;
 using CucaLanches.Application.Neighborhoods.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,12 +21,16 @@ public class NeighborhoodController:ControllerBase
     [HttpGet]
     public async Task<List<NeighborhoodResponseDTO>> GetAllAsync([FromQuery] bool all)
     {
-        var neighborhoods = await _Service.ListAsync(all);
+        
+        var isAdmin = User.IsInRole("Admin");
+        
+        var neighborhoods = await _Service.ListAsync(all && isAdmin);
         
         return  neighborhoods;
     }
 
     [HttpPost]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<NeighborhoodResponseDTO>> Post(NeighborhoodRequestDTO neighborhoodRequest)
     {
         
@@ -36,6 +41,7 @@ public class NeighborhoodController:ControllerBase
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<IActionResult> Patch([FromRoute]int id,[FromBody]NeighborhoodUpdateRequestDTO request)
     {
         var updatedNeighborhood = await _Service.UpdateAsync(id, request);

@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using CucaLanches.Application.Exceptions;
 using CucaLanches.Application.Orders.DTOs;
 using CucaLanches.Application.Orders.Interfaces;
 using CucaLanches.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CucaLanches.Api.Controllers;
@@ -19,14 +21,19 @@ public class OrderController:ControllerBase
         _orderService = orderService;
     }
 
+    
     [HttpPost]
+    [Authorize(Policy = "ClientOnly")]
     public async Task<ActionResult<OrderResponseDto>> CreateAsync(CreateOrderRequestDto req)
     {
-        var result = await _orderService.CreateAsync(req);
+        var clientid = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        
+        var result = await _orderService.CreateAsync(req,clientid);
         return Ok(result);
     }
 
     [HttpGet]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<List<OrderResponseDto>>> GetAsync([FromQuery]DateTime? date,[FromQuery] OrderStatus? status)
     {
         if (!ModelState.IsValid)
@@ -50,6 +57,7 @@ public class OrderController:ControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<OrderResponseDto>> GetByIdAsync(int id)
     {
         var result = await _orderService.GetOrderByIdAsync(id);
@@ -57,6 +65,7 @@ public class OrderController:ControllerBase
     }
 
     [HttpPatch("{id}/status")]
+    [Authorize(Policy = "AdminOnly")]
     public async Task<ActionResult<OrderResponseDto>> ChangeStatus([FromRoute]int id,[FromQuery]OrderStatus status)
     {
         var result = await _orderService.ChangeStatusAsync(id, status);
