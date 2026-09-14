@@ -31,7 +31,6 @@ public class StoreSettingsTests:BaseIntegrationTest
         var test2 = await Client.GetFromJsonAsync<StoreSettingsResponseDTO>("/store/status");
         
         Assert.False(test2!.IsOpen);
-
     }
     
 }

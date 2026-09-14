@@ -19,6 +19,7 @@ using CucaLanches.Application.PublicMenu.Services;
 using CucaLanches.Application.StoreSettings.Interfaces;
 using CucaLanches.Application.StoreSettings.Services;
 using CucaLanches.Application.Users.Interfaces;
+using CucaLanches.Application.Users.Services;
 using CucaLanches.Infrastructure;
 using CucaLanches.Infrastructure.Addresses;
 using CucaLanches.Infrastructure.Clients;
@@ -91,6 +92,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
 builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<ITokenService,TokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 //Auth

@@ -17,4 +17,27 @@ public class UserRepository:IUserRepository
     {
         return await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
     }
+
+    public async Task<List<User>> GetAllAsync()
+    {
+        return await _dbContext.Users.AsNoTracking().ToListAsync();
+    }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u=> u.Id == id);
+    }
+
+    public async Task CreateAsync(User user)
+    {
+        _dbContext.Users.Add(user);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(User user)
+    {
+        _dbContext.Users.Remove(user);
+        await _dbContext.SaveChangesAsync();
+    }
+    
 }
